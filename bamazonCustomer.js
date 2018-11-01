@@ -10,8 +10,8 @@ var connection = mysql.createConnection({
 var Table = require("cli-table");
 
 function validatePositiveInteger(input) {
-  var reg = /^\d+$/;
-  var isValid = reg.test(input) && input > 0;
+  var re = /^\d+$/;
+  var isValid = re.test(input) && input > 0;
   return isValid || "Please enter an integer greater than zero.";
 }
 
@@ -46,11 +46,13 @@ function buyProduct(id, quantity) {
       console.log("We do not have sufficient stock. Please choose a smaller quantity or a different product.");
     } else {
       var newQuantity = stockQuantity - quantity;
-      connection.query("UPDATE products SET stock_quantity=" + newQuantity + " WHERE item_id=" + id, function(err, res2) {});
+      connection.query("UPDATE products SET stock_quantity=" + newQuantity + " WHERE item_id=" + id, function(err, res) {});
       totalPrice = price * quantity;
       var message = "Purchased " + quantity + " item";
       quantity > 1 ? message += "s" : null;
-      message += " at $" + price + " each for a total of $" + totalPrice + ".";
+      message += " at $" + price;
+      quantity > 1 ? message += " each" : null;
+      message += " for a total of $" + totalPrice + ".";
       console.log(message);
     }
     prompt();
