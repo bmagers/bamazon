@@ -18,13 +18,13 @@ function validatePositiveInteger(input) {
 function prompt() {
   var promptName = {
     message: "Please enter the ID of the product you'd like to buy:",
-    name: "buyName",
+    name: "id",
     validate: validatePositiveInteger
   };
   
   var promptQuantity = {
     message: "Please enter the quantity you'd like to buy:",
-    name: "buyQuantity",
+    name: "quantity",
     validate: validatePositiveInteger
   };
   
@@ -32,14 +32,31 @@ function prompt() {
     promptName,
     promptQuantity
   ]).then(function(user) {
-    // check if there's enough
-    // if not, "Insufficient quantity!"
-    // if so, update quantity remaining
-    // show customer total cost of purchase
+    buyProduct(user.id, user.quantity);
   });
 }
 
-// display items for sale
+function buyProduct(id, quantity) {
+  connection.query("SELECT item_id, product_name, price, stock_quantity FROM products WHERE item_id=" + id, function(err, res) {
+    var stockQuantity = res[0].stock_quantity;
+    var price = res[0].price;
+    var totalPrice;
+    if (err) throw err;
+    if (quantity > stockQuantity) {
+      console.log("We do not have sufficient stock. Please choose a smaller quantity or a different product.");
+    } else {
+      var newQuantity = stockQuantity - quantity;
+      connection.query("UPDATE products SET stock_quantity=" + newQuantity + " WHERE item_id=" + id, function(err, res2) {});
+      totalPrice = price * quantity;
+      var message = "Purchased " + quantity + " item";
+      quantity > 1 ? message += "s" : null;
+      message += " at $" + price + " each for a total of $" + totalPrice + ".";
+      console.log(message);
+    }
+    prompt();
+  });
+}
+
 connection.query("SELECT * FROM products", function(err, res) {
   if (err) throw err;
   var table = new Table({
@@ -51,5 +68,4 @@ connection.query("SELECT * FROM products", function(err, res) {
   });
   console.log(table.toString());
   prompt();
-  connection.end();
 });
