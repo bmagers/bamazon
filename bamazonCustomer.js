@@ -1,6 +1,5 @@
 var inquirer = require("inquirer");
 var mysql = require("mysql");
-var Table = require("cli-table");
 var connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
@@ -8,16 +7,25 @@ var connection = mysql.createConnection({
   password: "",
   database: "bamazon"
 });
+var Table = require("cli-table");
+
+function validatePositiveInteger(input) {
+  var reg = /^\d+$/;
+  var isValid = reg.test(input) && input > 0;
+  return isValid || "Please enter an integer greater than zero.";
+}
 
 function prompt() {
   var promptName = {
+    message: "Please enter the ID of the product you'd like to buy:",
     name: "buyName",
-    message: "Please enter the ID of the product you'd like to buy:"
+    validate: validatePositiveInteger
   };
   
   var promptQuantity = {
+    message: "Please enter the quantity you'd like to buy:",
     name: "buyQuantity",
-    message: "Please enter the quantity you'd like to buy:"
+    validate: validatePositiveInteger
   };
   
   inquirer.prompt([
@@ -25,9 +33,9 @@ function prompt() {
     promptQuantity
   ]).then(function(user) {
     // check if there's enough
-  // if not, "Insufficient quantity!"
-  // if so, update quantity remaining
-  // show customer total cost of purchase
+    // if not, "Insufficient quantity!"
+    // if so, update quantity remaining
+    // show customer total cost of purchase
   });
 }
 
