@@ -16,7 +16,7 @@ function validatePositiveInteger(input) {
 }
 
 function prompt() {
-  var promptName = {
+  var promptId = {
     message: "Please enter the ID of the product you'd like to buy:",
     name: "id",
     validate: validatePositiveInteger
@@ -29,7 +29,7 @@ function prompt() {
   };
   
   inquirer.prompt([
-    promptName,
+    promptId,
     promptQuantity
   ]).then(function(user) {
     buyProduct(user.id, user.quantity);
@@ -63,7 +63,7 @@ connection.query("SELECT * FROM products", function(err, res) {
   if (err) throw err;
   var table = new Table({
     head: ["ID", "Name", "Price"],
-    colWidths: [6, 40, 20]
+    colWidths: [6, 35, 10]
   });
   res.forEach(function(item, index) {
     table.push([res[index].item_id, res[index].product_name, res[index].price]);
